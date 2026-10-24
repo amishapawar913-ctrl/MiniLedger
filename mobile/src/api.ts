@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { File } from 'expo-file-system';
 
 // Android emulator -> host machine is 10.0.2.2. For a real phone, set EXPO_PUBLIC_API_URL
 // to your computer's LAN IP, e.g. http://192.168.1.5:4000
@@ -64,7 +65,8 @@ export const api = {
     body.append('amount', f.amount);
     body.append('due_date', f.due_date);
     if (f.receiptUri) {
-      body.append('receipt', { uri: f.receiptUri, name: 'receipt.jpg', type: 'image/jpeg' } as any);
+      // Expo SDK 58 needs a real File object (not a { uri, name, type } object)
+      body.append('receipt', new File(f.receiptUri) as any);
     }
     return request<Loan>('/loans', { method: 'POST', body });
   },
